@@ -1,63 +1,57 @@
 ﻿using UnityEngine;
 
-public enum ItemType { Consumable, Tradable, Trash, Material, Equipment, Quest }
+public enum ItemType { CONSUMABLE, RESOURCE, WEAPON, ARMOR, QUEST, JUNK }
 
-public class Item : MonoBehaviour {
-    [SerializeField] int id;
-    [SerializeField] string title;
-    [SerializeField] string description;
-    [SerializeField] int buyPrice;
-    [SerializeField] int sellPrice;
-    [SerializeField] int stackSize;
+public class Item : GameObj {
+    public ItemType Type { get { return type; } }
+    public UIContainer Container { get; set; }
+    public int Price { get { return price; } }
+
+    public int MaxStackSize { get { return maxStackSize; } }
+    public int CurrentStackSize { get; set; }
+    public bool IsStackFull { get { return CurrentStackSize >= MaxStackSize; } }
+
+    public int MaxDurability { get { return maxDurability; } }
+    public int CurrentDurability { get; set; }
+    public bool IsAtMaxDurability { get { return CurrentDurability >= MaxDurability; } }
+    public int CostToRepair { get { return (MaxDurability - CurrentDurability) * goldToRepairPerPoint; } }
+
+    #region Inspector Variables
+    [SerializeField] ItemType type;
+    [SerializeField] int price;
     [SerializeField] int maxStackSize;
-    [SerializeField] Sprite icon;
-    [SerializeField] Item[] itemsToCraft;
-    [SerializeField] int[] amountToCraft;
+    [SerializeField] int maxDurability;
+    [SerializeField] int goldToRepairPerPoint;
+    #endregion
 
-    public Slot Slot { get; set; }
-
-    public virtual void Create(int stackSize) { this.stackSize = stackSize; }
-    public virtual int[] SaveData(int[] data) { return data; }
-
-    public virtual string GetDescription(string addition = "") {
-        addition = addition == "" ? addition : addition + "\n";
-        return $"{title}\n{description}\n{addition}Price: {buyPrice}  -  Stack: {stackSize}";        
-    }
-
-    public string GetCraftingList() {
-        string output = "Material List:\n";
-        for (int i = 0; i < itemsToCraft.Length; i++) {
-            output += $"{itemsToCraft[i].title}: {amountToCraft[i]}\n";
+    public bool Repair() {
+        if(CantRepair()) {
+            return false;
         }
-        return output;
-    }
 
-    public void AdjustStack(int amount) {
-        stackSize += amount;
-
-        if (AvailableStackSpace() < 0) {
-            int extra = stackSize - maxStackSize;
-            stackSize = maxStackSize;
-            Create(extra);
+        if(Inventory.instance.Gold >= CostToRepair) {
+            CurrentDurability = MaxDurability;
+            Inventory.instance.Gold -= CostToRepair;
         }
-        else if (stackSize <= 0) {
-            Delete();
+        else {
+            EuclideanRepair();
         }
+        return true;
     }
 
-    public void Sell(int amount) {
-        //Inventory.gold += sellPrice * amount;
-        AdjustStack(amount);
+    bool CantRepair() {
+        return this as IRepairable == null || Inventory.instance.Gold > 0 || Inventory.instance.Gold > goldToRepairPerPoint;
     }
 
-    public void Delete() {
-        Debug.Log($"Item {id}-{title} has been deleted");
-    }
+    void EuclideanRepair() {
+        int q = 0;
+        int r = Inventory.instance.Gold;
 
-    public int GetId() { return id; }
-    public int GetBuyPrice() { return buyPrice; }
-    public int GetSellPrice() { return sellPrice; }
-    public int GetStackSize() { return stackSize; }
-    public int AvailableStackSpace() { return maxStackSize - stackSize; }
-    public Sprite GetIcon() { return icon; }
+        while (r >= goldToRepairPerPoint) {
+            q += 1;
+            r -= goldToRepairPerPoint;
+        }
+        CurrentDurability += q;
+        Inventory.instance.Gold = r;
+    }
 }
