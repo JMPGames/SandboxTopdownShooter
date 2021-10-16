@@ -40,7 +40,7 @@ public class Item : GameObj {
     }
 
     bool CantRepair() {
-        return this as IRepairable == null || Inventory.instance.Gold > 0 || Inventory.instance.Gold > goldToRepairPerPoint;
+        return this as IRepairable == null || Inventory.instance.Gold <= 0 || Inventory.instance.Gold < goldToRepairPerPoint;
     }
 
     void EuclideanRepair() {
