@@ -3,7 +3,7 @@
 public enum ItemType { CONSUMABLE, RESOURCE, WEAPON, ARMOR, QUEST, JUNK }
 
 public class Item : GameObj {
-    public ItemType Type { get { return type; } }
+    public ItemType ItemType { get { return itemType; } }
     public UIContainer Container { get; set; }
     public int Price { get { return price; } }
 
@@ -17,7 +17,7 @@ public class Item : GameObj {
     public int CostToRepair { get { return (MaxDurability - CurrentDurability) * goldToRepairPerPoint; } }
 
     #region Inspector Variables
-    [SerializeField] ItemType type;
+    [SerializeField] ItemType itemType;
     [SerializeField] int price;
     [SerializeField] int maxStackSize;
     [SerializeField] int maxDurability;
