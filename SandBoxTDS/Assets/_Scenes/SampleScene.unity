@@ -432,6 +432,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdc823511727c404e97f9ba8be339f2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
+  title: 
+  description: 
+  icon: {fileID: 0}
+  entityType: 0
+  abilities:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  maxHealth: 0
 --- !u!114 &733063354
 MonoBehaviour:
   m_ObjectHideFlags: 0

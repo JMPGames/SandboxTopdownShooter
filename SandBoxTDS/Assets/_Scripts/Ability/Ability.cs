@@ -1,17 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+
+/*
+ This class handles all base logic for Abilities:
+ Cooldowns, Damage/Heal amount, Type, and StatusEffect added.
+
+ SubClasses of this class will override Use() to handle indiviual
+ ability logic.
+ */
 
 public enum AbilityType { PASSIVE, OFFENSIVE, DEFENSIVE }
 
-public class Ability : GameObj {
+public class Ability : GameObj, IUsable {
     public AbilityType AbilityType { get { return abilityType; } }
     public int Amount { get { return amount; } }
     public StatusEffect StatusEffect { get { return statusEffect; } }
     public bool AddsStatusEffect { get { return statusEffect != null; } }
     public float Cooldown { get { return cooldown; } }
     public float CooldownTimer { get; private set; }
-    public bool OnCooldown { get { return CooldownTimer > 0.0f; } }
 
     #region Inspector Variables
     [SerializeField] AbilityType abilityType;
@@ -24,8 +29,12 @@ public class Ability : GameObj {
         UpdateCooldown();
     }
 
-    public virtual void Cast() {
+    public virtual void Use() {
         CooldownTimer = Cooldown;
+    }
+
+    public bool Usable() {
+        return CooldownTimer <= 0.0f;
     }
 
     public void DecreaseCooldown(bool total = true, float amount = 0) {
@@ -38,7 +47,7 @@ public class Ability : GameObj {
     }
 
     void UpdateCooldown() {
-        if (OnCooldown) {
+        if (!Usable()) {
             CooldownTimer -= Time.deltaTime;
         }
     }

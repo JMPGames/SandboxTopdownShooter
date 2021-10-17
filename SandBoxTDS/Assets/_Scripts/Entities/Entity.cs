@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum EntityType { PLAYER, ENEMY, CRITTER, NPC }
+public enum EntityState { ACTIVE, INACTIVE, DEAD }
 
 public class Entity : GameObj {
-    const float LoseSightMod = 1.5f;
-
     public EntityType EntityType { get { return entityType; } }
-    public Ability[] Abilities { get { return abilities; } }  
+    public EntityState EntityState { get; set; }
+    public bool ActiveState { get { return EntityState == EntityState.ACTIVE; } }
+    public bool DeadState { get { return EntityState == EntityState.DEAD; } }
+    public float InactiveStateTimer { get; set; }
+    public Ability[] Abilities { get { return abilities; } }
     public int MaxHealth { get { return maxHealth; } }
     public int Health {
         get { return health; }
         set { AdjustHealth(value); }
     }
-
-    int health;
-    [SerializeField] float sightRange;
-    bool targetSpotted;
+    int health;  
 
     #region Inspector Variables
     [SerializeField] EntityType entityType;
@@ -25,14 +25,8 @@ public class Entity : GameObj {
     [SerializeField] int maxHealth;
     #endregion
 
-    public bool CheckForTargetInSight(float distance) {
-        if (targetSpotted && distance > (sightRange * LoseSightMod)) {
-            targetSpotted = false;
-        }
-        else if(distance < sightRange) {
-            targetSpotted = true;
-        }
-        return targetSpotted;
+    void Update() {
+        UpdateInactiveStateTimer();
     }
 
     public void AddAbility(Ability a, int slot) {
@@ -44,8 +38,8 @@ public class Entity : GameObj {
     }
 
     public bool UseAbility(int slot) {
-        if (abilities[slot] != null && !abilities[slot].OnCooldown) {
-            abilities[slot].Cast();
+        if (abilities[slot] != null && abilities[slot].Usable()) {
+            abilities[slot].Use();
             return true;
         }
         return false;
@@ -61,6 +55,15 @@ public class Entity : GameObj {
             }
             else if (health < 0) {
                 health = 0;
+            }
+        }
+    }
+
+    void UpdateInactiveStateTimer() {
+        if (InactiveStateTimer > 0.0f && !DeadState) {
+            InactiveStateTimer -= Time.deltaTime;
+            if (InactiveStateTimer <= 0.0f) {
+                EntityState = EntityState.ACTIVE;
             }
         }
     }

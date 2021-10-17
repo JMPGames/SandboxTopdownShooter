@@ -2,6 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StatusEffect : MonoBehaviour {
+public class StatusEffect : GameObj {
 
 }
