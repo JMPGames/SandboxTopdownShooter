@@ -33,36 +33,26 @@ public class MobileEntity : MonoBehaviour {
     }
 
     void Update() {
-        if (CanMove()) {
+        if (entity.CanMove) {
             if (entity.EntityType == EntityType.PLAYER) {
-                move = (entity as PlayerController).GetMove(Slowed());
+                move = (entity as PlayerController).GetMove();
             }
             else if (entity.EntityType == EntityType.NPC) {
                 //move = (entity as NPCController).GetMove();
             }
             else {
-                move = (entity as EnemyController).GetMove(Slowed());
+                move = (entity as EnemyController).GetMove();
             }
         }
     }
 
     void FixedUpdate() {
-        if (CanMove()) {
+        if (entity.CanMove) {
             Move();
         }
     }
 
     void Move() {
         rb.velocity = Velocity;
-    }
-
-    bool CanMove() {
-        //status effect/interacting/rolling/menus/etc checks
-        return true; //return true as placeholder
-    }
-
-    bool Slowed() {
-        //check for reload/attacking animation/slowing status effect
-        return false; //return false as placeholder
     }
 }

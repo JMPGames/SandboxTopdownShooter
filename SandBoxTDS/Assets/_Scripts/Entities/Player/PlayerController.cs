@@ -1,30 +1,55 @@
 ﻿using UnityEngine;
 
+/*
+ This class handles player input and stamina logic 
+ */
+
 [RequireComponent(typeof(MobileEntity))]
 public class PlayerController : Entity, IMobile {
+    const float MaxSprintStamina = 100;
+
+    public Weapon CurrentWeapon { get { return Inventory.instance.equipment.Weapons[currentWeapon]; } }
+    public float SprintStamina { get; private set; }
+    bool CanSprint { get { return SprintStamina > 0.0f; } }
+
     Camera cam;
+    int currentWeapon;
+    bool sprinting;
 
     void Start() {
         cam = Camera.main;
+        currentWeapon = 0;
     }
 
-    public (Vector3, int) GetMove(bool slowed) {
-        (Vector3, int) result = (Vector3.zero, 0);
-        Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0.0f, Input.GetAxisRaw("Vertical"));
-        if (Input.GetMouseButton(0) || slowed) {
-            //Shooting animation
-            //Ammo check
-            Shoot();
-            result = (input, 0);
+    void Update() {
+        UpdateSprint();
+    }
+
+    #region Movement
+    public (Vector3, int) GetMove() {
+        (Vector3, int) result = (new Vector3(Input.GetAxisRaw("Horizontal"), 0.0f, Input.GetAxisRaw("Vertical")), 0);
+        if (Input.GetMouseButton(0) && CanAct) {
+            if (CurrentWeapon.CanFire) {
+                CurrentWeapon.Fire();
+            }
+            //Aiming animation with laser
         }
-        else if (Input.GetKey(KeyCode.LeftShift)) {
+        else if (Input.GetMouseButton(1)) {
+            //Aiming animation with laser
+        }
+        else if (Slowed) {
+            //Slowed animation
+        }
+        else if (Input.GetKey(KeyCode.LeftShift) && CanSprint) {
+            result.Item2 = 2;
+            if (!sprinting) {
+                sprinting = true;
+            }
             //Sprint animation
-            //Sprint stamina check
-            result = (input, 2);
         }
         else {
+            result.Item2 = 1;
             //Normal run animation
-            result = (input, 1);
         }
         AimAtMouseCursor();
         return result;
@@ -40,8 +65,22 @@ public class PlayerController : Entity, IMobile {
         }
     }
 
-    void Shoot() {
-        //Check ammo/direction/weapon type/weapon fire interval
-        //instantiate bullet/melee attack
+    void UpdateSprint() {
+        if (sprinting) {
+            if (Input.GetKeyUp(KeyCode.LeftShift)) {
+                sprinting = false;
+                return;
+            }
+            if ((SprintStamina -= Time.deltaTime) < 0.0f) {
+                SprintStamina = 0.0f;
+                sprinting = false;
+            }
+        }
+        else if (SprintStamina < MaxSprintStamina) {
+            if ((SprintStamina += Time.deltaTime) > MaxSprintStamina) { 
+                SprintStamina = MaxSprintStamina;
+            }
+        }
     }
+    #endregion
 }

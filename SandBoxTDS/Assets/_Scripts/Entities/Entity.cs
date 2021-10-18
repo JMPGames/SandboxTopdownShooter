@@ -1,16 +1,39 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+
+/*
+ This class handles all Entity States and Type, and health
+ */
 
 public enum EntityType { PLAYER, ENEMY, CRITTER, NPC }
-public enum EntityState { ACTIVE, INACTIVE, DEAD }
+public enum EntityState { FREE, NOACT, SLOWED, SLOWED_NOACT, IMMOBILE, IMMOBILE_NOACT, DEAD }
 
 public class Entity : GameObj {
     public EntityType EntityType { get { return entityType; } }
+
     public EntityState EntityState { get; set; }
-    public bool ActiveState { get { return EntityState == EntityState.ACTIVE; } }
+    public EntityState NextState { get; set; }
+    public bool FreeState { get { return EntityState == EntityState.FREE; } }
     public bool DeadState { get { return EntityState == EntityState.DEAD; } }
-    public float InactiveStateTimer { get; set; }
+    public float StateTimer { get; set; }
+
+    public bool Slowed {
+        get {
+            return EntityState == EntityState.SLOWED || EntityState == EntityState.SLOWED_NOACT;
+        }
+    }
+
+    public bool CanMove {
+        get {
+            return EntityState != EntityState.IMMOBILE && EntityState != EntityState.IMMOBILE_NOACT;
+        }
+    }
+
+    public bool CanAct {
+        get {
+            return EntityState != EntityState.NOACT && EntityState != EntityState.SLOWED_NOACT && EntityState != EntityState.IMMOBILE_NOACT;
+        }
+    }
+
     public Ability[] Abilities { get { return abilities; } }
     public int MaxHealth { get { return maxHealth; } }
     public int Health {
@@ -26,7 +49,7 @@ public class Entity : GameObj {
     #endregion
 
     void Update() {
-        UpdateInactiveStateTimer();
+        UpdateStateTimers();
     }
 
     public void AddAbility(Ability a, int slot) {
@@ -55,15 +78,22 @@ public class Entity : GameObj {
             }
             else if (health < 0) {
                 health = 0;
+                EntityState = EntityState.DEAD;
             }
         }
     }
 
-    void UpdateInactiveStateTimer() {
-        if (InactiveStateTimer > 0.0f && !DeadState) {
-            InactiveStateTimer -= Time.deltaTime;
-            if (InactiveStateTimer <= 0.0f) {
-                EntityState = EntityState.ACTIVE;
+    void Death() {
+        Debug.Log("dead");
+        //death animation, sound, object pooling
+    }
+
+    void UpdateStateTimers() {
+        if (!DeadState) {
+            if (StateTimer > 0.0f) {
+                if ((StateTimer -= Time.deltaTime) <= 0.0f) {
+                    EntityState = NextState;
+                }
             }
         }
     }

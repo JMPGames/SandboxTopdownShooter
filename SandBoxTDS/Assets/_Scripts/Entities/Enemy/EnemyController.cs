@@ -4,8 +4,6 @@
     This class handles enemy movement and attacking logic.
     Random movement, chasing/running away from the player
     Checking if the player is in range to attack, and attacking.
-
-    Self contained variables
  */
 
 public enum EnemyType { RANGED, MELEE, PATTERNED }
@@ -16,18 +14,22 @@ public class EnemyController : Entity, IMobile {
     const float MinPatrolTime = 3.0f;
     const float MaxPatrolTime = 6.0f;
 
-    Transform target;
     [SerializeField] float sightRange;
-    float distanceToTarget;
-    bool targetSpotted;
     [SerializeField] int damage;
     [SerializeField] float attackRange;
     [SerializeField] float attackSpeed;
-    float attackTimer;
     [SerializeField] float attackToMoveTime;
-    float attackToMoveTimer;
+
+    Transform target;
+    float distanceToTarget;
+    bool targetSpotted;
+    float attackTimer;
     Vector3 patrolDirection;
     float patrolTimer;
+
+    bool TargetInAttackRange { get { return distanceToTarget <= attackRange; } }
+    bool AttackTimerZero { get { return attackTimer <= 0.0f; } }
+    bool Patrolling { get { return patrolTimer > 0.0f; } }
 
     void Start() {
         target = GameObject.FindGameObjectWithTag("Player").transform;
@@ -35,9 +37,11 @@ public class EnemyController : Entity, IMobile {
 
     void Update() {
         UpdatePatrolTimer();
+        UpdateAttackTimer();
     }
 
-    public (Vector3, int) GetMove(bool slowed) {
+    //Called every frame
+    public (Vector3, int) GetMove() {
         CheckForTargetInSight();
         if (targetSpotted) {
             GetTargetSpottedFacing();
@@ -46,10 +50,7 @@ public class EnemyController : Entity, IMobile {
                 Attack();
                 return (Vector3.zero, 0);
             }
-            else if (InbetweenAttacks()) {
-                slowed = true;
-            }
-            return (Vector3.forward, slowed ? 0 : 1);
+            return (Vector3.forward, Slowed ? 0 : 1);
         }
         GetRandomFacing();
         return (Vector3.forward, 0);
@@ -67,18 +68,19 @@ public class EnemyController : Entity, IMobile {
     }
 
     bool CanAttack() {
-        return distanceToTarget < attackRange && attackTimer <= 0.0f && ActiveState;
+        return TargetInAttackRange && AttackTimerZero && CanAct;
     }
 
     bool InbetweenAttacks() {
-        return attackTimer > 0.0f && ActiveState && distanceToTarget > attackRange;
+        return !AttackTimerZero && CanAct && !TargetInAttackRange;
     }
 
     void Attack() {
         //animation, fire bullet/melee hit check, sound
-        EntityState = EntityState.INACTIVE;
+        EntityState = EntityState.SLOWED_NOACT;
+        NextState = EntityState.NOACT;
         attackTimer = attackSpeed;
-        InactiveStateTimer = attackToMoveTime;
+        StateTimer = attackToMoveTime;
     }
 
     void GetTargetSpottedFacing() {
@@ -92,7 +94,7 @@ public class EnemyController : Entity, IMobile {
     }
 
     Vector3 GetRandomFacing() {
-        if (patrolTimer > 0.0f) {
+        if (Patrolling) {
             return patrolDirection;
         }
         patrolDirection = new Vector3(0.0f, Random.Range(-180f, 180f), 0.0f);
@@ -100,8 +102,14 @@ public class EnemyController : Entity, IMobile {
     }
 
     void UpdatePatrolTimer() {
-        if (!targetSpotted && patrolTimer > 0.0f) {
+        if (!targetSpotted && Patrolling) {
             patrolTimer -= Time.deltaTime;
+        }
+    }
+
+    void UpdateAttackTimer() {
+        if (!AttackTimerZero && (attackTimer -= Time.deltaTime) <= 0.0f) {
+            NextState = EntityState = EntityState.FREE;
         }
     }
 }

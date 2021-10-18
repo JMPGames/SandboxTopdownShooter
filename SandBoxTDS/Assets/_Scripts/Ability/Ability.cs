@@ -6,6 +6,7 @@
 
  SubClasses of this class will override Use() to handle indiviual
  ability logic.
+ Readonly data, cd timer private set.
  */
 
 public enum AbilityType { PASSIVE, OFFENSIVE, DEFENSIVE }
@@ -29,7 +30,7 @@ public class Ability : GameObj, IUsable {
         UpdateCooldown();
     }
 
-    public virtual void Use() {
+    public virtual void Use(Entity target = null) {
         CooldownTimer = Cooldown;
     }
 
