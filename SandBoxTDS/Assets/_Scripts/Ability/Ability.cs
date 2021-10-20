@@ -1,14 +1,5 @@
 ﻿using UnityEngine;
 
-/*
- This class handles all base logic for Abilities:
- Cooldowns, Damage/Heal amount, Type, and StatusEffect added.
-
- SubClasses of this class will override Use() to handle indiviual
- ability logic.
- Readonly data, cd timer private set.
- */
-
 public enum AbilityType { PASSIVE, OFFENSIVE, DEFENSIVE }
 
 public class Ability : GameObj, IUsable {
@@ -31,7 +22,7 @@ public class Ability : GameObj, IUsable {
     }
 
     public virtual void Use(Entity target = null) {
-        CooldownTimer = Cooldown;
+        CooldownTimer = cooldown;
     }
 
     public bool Usable() {

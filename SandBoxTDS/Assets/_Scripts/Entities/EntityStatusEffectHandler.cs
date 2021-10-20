@@ -1,19 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class EntityStatusEffectHandler : MonoBehaviour {
-    List<StatusEffect> StatusEffects { get; set; }
+    List<StatusEffect> StatusEffects = new List<StatusEffect>();
+    string[] immunities;
 
-    public bool CheckForStatusEffectByTitle(string title) {
-        if (StatusEffects.Count <= 0) {
+    public bool AddStatusEffect(StatusEffect se) {
+        if (immunities.Any(i => i == se.Title)) {
             return false;
         }
+        StatusEffects.Add(se);
+        return true;
+    }
 
-        for (int i = 0; i < StatusEffects.Count; i++) {
-            if (StatusEffects[i].Title == title) {
-                return true;
-            }
+    public bool RemoveStatusEffect(StatusEffect se) {
+        if (CheckForStatusEffectByTitle(se.Title)) {
+            StatusEffects.Remove(se);
+            return true;
+        }
+        return false;
+    }
+
+    public bool CheckForStatusEffectByTitle(string title) {        
+        if (StatusEffects.Any(se => se.Title == title)) {
+            return true;
         }
         return false;
     }

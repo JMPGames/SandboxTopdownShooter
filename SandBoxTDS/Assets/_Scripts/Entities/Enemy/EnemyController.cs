@@ -3,11 +3,13 @@
 public enum EnemyType { RANGED, MELEE, PATTERNED }
 
 [RequireComponent(typeof(MobileEntity))]
+[RequireComponent(typeof(EntityStatusEffectHandler))]
 [RequireComponent(typeof(EnemySightHandler))]
 public class EnemyController : Entity, IMobile {
     const float MinPatrolTime = 3.0f;
     const float MaxPatrolTime = 6.0f;
 
+    EntityStatusEffectHandler seHandler;
     EnemySightHandler sh;
 
     Vector3 patrolDirection;
@@ -37,22 +39,21 @@ public class EnemyController : Entity, IMobile {
 
     //Called every frame
     public (Vector3, int) GetMove() {
-        sh.CheckForTargetInSight();
-        if (sh.TargetSpotted) {
-            sh.GetTargetSpottedFacing(EntityType == EntityType.CRITTER);
+        if (sh.CheckForTargetInSight()) {
+            transform.LookAt(sh.GetTargetSpottedFacing(EntityType == EntityType.CRITTER));
 
             if (CanAttack()) {
                 Attack();
                 return (Vector3.zero, 0);
             }
-            return (Vector3.forward, Slowed ? 0 : 1);
+            return (Vector3.forward, Slowed() ? 0 : 1);
         }
         transform.LookAt(GetRandomFacing());
         return (Vector3.forward, 0);
     }
 
     bool CanAttack() {
-        return !sh.TargetTooClose() && TargetInAttackRange() && AttackTimerZero && CanAct;
+        return !sh.TargetTooClose() && TargetInAttackRange() && AttackTimerZero && CanAct();
     }
 
     bool TargetInAttackRange() {
@@ -62,7 +63,7 @@ public class EnemyController : Entity, IMobile {
     public virtual void Attack() {
         //animation, fire bullet/melee hit check, sound
         EntityState = EntityState.SLOWED_NOACT;
-        NextState = EntityState.NOACT;
+        NextEntityState = EntityState.NOACT;
         attackTimer = attackSpeed;
         StateTimer = attackToMoveTime;
     }
@@ -84,7 +85,7 @@ public class EnemyController : Entity, IMobile {
 
     void UpdateAttackTimer() {
         if (!AttackTimerZero && (attackTimer -= Time.deltaTime) <= 0.0f) {
-            NextState = EntityState = EntityState.FREE;
+            NextEntityState = EntityState = EntityState.FREE;
         }
     }
 }

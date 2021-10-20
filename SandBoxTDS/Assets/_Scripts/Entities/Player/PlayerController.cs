@@ -5,13 +5,13 @@
  */
 
 [RequireComponent(typeof(MobileEntity))]
+[RequireComponent(typeof(EntityStatusEffectHandler))]
 public class PlayerController : Entity, IMobile {
     const float MaxSprintStamina = 100;
 
-    public Weapon CurrentWeapon { get { return Inventory.instance.equipment.Weapons[currentWeapon]; } }
     public float SprintStamina { get; private set; }
-    bool CanSprint { get { return SprintStamina > 0.0f; } }
 
+    EntityStatusEffectHandler seHandler;
     Camera cam;
     int currentWeapon;
     bool sprinting;
@@ -25,22 +25,21 @@ public class PlayerController : Entity, IMobile {
         UpdateSprint();
     }
 
-    #region Movement
     public (Vector3, int) GetMove() {
         (Vector3, int) result = (new Vector3(Input.GetAxisRaw("Horizontal"), 0.0f, Input.GetAxisRaw("Vertical")), 0);
-        if (Input.GetMouseButton(0) && CanAct) {
-            if (CurrentWeapon.CanFire) {
-                CurrentWeapon.Fire();
+        if (Input.GetMouseButton(0) && CanAct()) {
+            if (CurrentWeapon().CanFire) {
+                CurrentWeapon().Fire();
             }
             //Aiming animation with laser
         }
         else if (Input.GetMouseButton(1)) {
             //Aiming animation with laser
         }
-        else if (Slowed) {
+        else if (Slowed()) {
             //Slowed animation
         }
-        else if (Input.GetKey(KeyCode.LeftShift) && CanSprint) {
+        else if (Input.GetKey(KeyCode.LeftShift) && SprintStamina > 0.0f) {
             result.Item2 = 2;
             if (!sprinting) {
                 sprinting = true;
@@ -53,6 +52,10 @@ public class PlayerController : Entity, IMobile {
         }
         AimAtMouseCursor();
         return result;
+    }
+
+    Weapon CurrentWeapon() {
+        return Inventory.instance.equipment.GetWeaponAtSlot(currentWeapon);
     }
 
     void AimAtMouseCursor() {
@@ -82,5 +85,4 @@ public class PlayerController : Entity, IMobile {
             }
         }
     }
-    #endregion
 }

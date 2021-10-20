@@ -15,23 +15,22 @@ public class EnemySightHandler : MonoBehaviour {
         this.enemyType = enemyType;
     }
 
-    public void CheckForTargetInSight() {
+    public bool CheckForTargetInSight() {
         if (TargetSpotted && DistanceToTarget() > (sightRange * LoseSightMod)) {
             TargetSpotted = false;
         }
         else if (!TargetSpotted && DistanceToTarget() < sightRange) {
             TargetSpotted = true;
         }
+        return TargetSpotted;
     }
 
-    public void GetTargetSpottedFacing(bool critter) {
+    public Vector3 GetTargetSpottedFacing(bool critter) {
         Vector3 direction = target.position - transform.position;
         if (TargetTooClose() || critter) {
-            transform.LookAt(new Vector3(-direction.x, transform.position.y, -direction.z));
+            return new Vector3(-direction.x, transform.position.y, -direction.z);
         }
-        else {
-            transform.LookAt(new Vector3(direction.x, transform.position.y, direction.z));
-        }
+        return new Vector3(direction.x, transform.position.y, direction.z);
     }
 
     public float DistanceToTarget() {

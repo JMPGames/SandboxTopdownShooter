@@ -1,19 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-/*
-    This class handles the game Entities movement, speed and facing.
-    Requires Unities Rigidbody component to handle movement.
-
-    Self contained variables
- */
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class MobileEntity : MonoBehaviour {
     Entity entity;
     (Vector3, int) move;
-    Vector3 Velocity { get { return move.Item1 * speeds[move.Item2]; } }
     Rigidbody rb;
     float[] speeds;
 
@@ -33,7 +23,7 @@ public class MobileEntity : MonoBehaviour {
     }
 
     void Update() {
-        if (entity.CanMove) {
+        if (entity.CanMove()) {
             if (entity.EntityType == EntityType.PLAYER) {
                 move = (entity as PlayerController).GetMove();
             }
@@ -47,12 +37,12 @@ public class MobileEntity : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (entity.CanMove) {
+        if (entity.CanMove()) {
             Move();
         }
     }
 
     void Move() {
-        rb.velocity = Velocity;
+        rb.velocity = move.Item1 * speeds[move.Item2];
     }
 }

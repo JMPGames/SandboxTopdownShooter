@@ -39,6 +39,20 @@ public class Item : GameObj {
         return true;
     }
 
+    public void Buy(int numberToBuy) {
+        //check inventory for space
+        //if CanAfford()
+        //add to inventory and take gold
+    }
+
+    public bool CanAfford(int numberToBuy) {
+        return (Price * numberToBuy) <= Inventory.instance.Gold;
+    }
+
+    public void Sell(int numberToSell) {
+        //remove from inventory and give gold
+    }
+
     bool CantRepair() {
         return this as IRepairable == null || Inventory.instance.Gold <= 0 || Inventory.instance.Gold < goldToRepairPerPoint;
     }
