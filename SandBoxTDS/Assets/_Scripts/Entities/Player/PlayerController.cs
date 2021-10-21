@@ -28,7 +28,7 @@ public class PlayerController : Entity, IMobile {
     public (Vector3, int) GetMove() {
         (Vector3, int) result = (new Vector3(Input.GetAxisRaw("Horizontal"), 0.0f, Input.GetAxisRaw("Vertical")), 0);
         if (Input.GetMouseButton(0) && CanAct()) {
-            if (CurrentWeapon().CanFire) {
+            if (CurrentWeapon().CanFire()) {
                 CurrentWeapon().Fire();
             }
             //Aiming animation with laser
@@ -55,7 +55,7 @@ public class PlayerController : Entity, IMobile {
     }
 
     Weapon CurrentWeapon() {
-        return Inventory.instance.equipment.GetWeaponAtSlot(currentWeapon);
+        return PlayerEquipment.instance.GetWeaponAtSlot(currentWeapon);
     }
 
     void AimAtMouseCursor() {

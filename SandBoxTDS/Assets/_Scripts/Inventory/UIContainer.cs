@@ -37,11 +37,11 @@ public class UIContainer : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void OnPointerEnter(PointerEventData eventData) {
         if (!IsEmpty) {
-            Inventory.instance.ShowTooltip(transform.position, Item);
+            SlotTooltip.instance.ShowTooltip(transform.position, Item);
         }
     }
 
     public void OnPointerExit(PointerEventData eventData) {
-        Inventory.instance.HideTooltip();
+        SlotTooltip.instance.HideTooltip();
     }
 }

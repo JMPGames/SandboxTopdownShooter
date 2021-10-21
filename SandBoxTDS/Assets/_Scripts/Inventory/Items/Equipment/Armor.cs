@@ -20,10 +20,15 @@ public class Armor : Item, IEquippable, IRepairable {
     }
 
     public void LoseDurability(int amount) {
-        throw new System.NotImplementedException();
+        DurabilityLoss(amount);
     }
 
     public void GainDurability(bool max = true, int amount = 0) {
-        throw new System.NotImplementedException();
+        if (max) {
+            FullRepair();
+        }
+        else {
+            RepairBy(amount);
+        }
     }
 }

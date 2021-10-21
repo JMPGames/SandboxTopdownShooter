@@ -9,12 +9,9 @@ public class Item : GameObj {
 
     public int MaxStackSize { get { return maxStackSize; } }
     public int CurrentStackSize { get; set; }
-    public bool IsStackFull { get { return CurrentStackSize >= MaxStackSize; } }
 
     public int MaxDurability { get { return maxDurability; } }
-    public int CurrentDurability { get; set; }
-    public bool IsAtMaxDurability { get { return CurrentDurability >= MaxDurability; } }
-    public int CostToRepair { get { return (MaxDurability - CurrentDurability) * goldToRepairPerPoint; } }
+    public int Durability { get; private set; }
 
     #region Inspector Variables
     [SerializeField] ItemType itemType;
@@ -24,19 +21,8 @@ public class Item : GameObj {
     [SerializeField] int goldToRepairPerPoint;
     #endregion
 
-    public bool Repair() {
-        if(CantRepair()) {
-            return false;
-        }
-
-        if(Inventory.instance.Gold >= CostToRepair) {
-            CurrentDurability = MaxDurability;
-            Inventory.instance.Gold -= CostToRepair;
-        }
-        else {
-            EuclideanRepair();
-        }
-        return true;
+    public bool StackIsFull() {
+        return CurrentStackSize >= MaxStackSize;
     }
 
     public void Buy(int numberToBuy) {
@@ -53,19 +39,64 @@ public class Item : GameObj {
         //remove from inventory and give gold
     }
 
-    bool CantRepair() {
-        return this as IRepairable == null || Inventory.instance.Gold <= 0 || Inventory.instance.Gold < goldToRepairPerPoint;
+    public void DurabilityLoss(int amount) {
+        if ((Durability -= amount) <= 0) {
+            Durability = 0;
+        }
     }
 
-    void EuclideanRepair() {
+    public bool RepairBy(int amount) {
+        if (CantRepair()) {
+            return false;
+        }
+        amount = amount > DurabilityMissing() ? DurabilityMissing() : amount;
+        EuclideanRepair(amount);
+        return true;
+    }
+
+    public bool FullRepair() {
+        if (CantRepair()) {
+            return false;
+        }
+
+        if (Inventory.instance.Gold >= CostToFullRepair()) {
+            Durability = MaxDurability;
+            Inventory.instance.Gold -= CostToFullRepair();
+        }
+        else {
+            EuclideanRepair(MaxDurability);
+        }
+        return true;
+    }
+
+    public int DurabilityMissing() {
+        return MaxDurability - Durability;
+    }
+
+    public bool DurabilityIsMaxed() {
+        return Durability >= MaxDurability;
+    }
+
+    public int CostToFullRepair() {
+        return DurabilityMissing() * goldToRepairPerPoint;
+    }
+
+    bool CantRepair() {
+        return this as IRepairable == null || Inventory.instance.Gold < goldToRepairPerPoint;
+    }
+
+    void EuclideanRepair(int maxQuotient) {
         int q = 0;
         int r = Inventory.instance.Gold;
 
-        while (r >= goldToRepairPerPoint) {
+        while (r >= goldToRepairPerPoint && q < maxQuotient) {
             q += 1;
             r -= goldToRepairPerPoint;
         }
-        CurrentDurability += q;
+        Durability += q;
         Inventory.instance.Gold = r;
     }
+
+    public virtual void SaveData() { }
+    public virtual void LoadData() { }
 }

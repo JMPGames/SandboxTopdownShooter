@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Consumable : MonoBehaviour, IUsable, IStackable {
+public class Consumable : Item, IUsable, IStackable {
     public bool Usable() {
         throw new System.NotImplementedException();
     }

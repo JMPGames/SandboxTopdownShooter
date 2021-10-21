@@ -3,6 +3,8 @@
 public class InventoryCursor : MonoBehaviour {
     public static InventoryCursor instance;
 
+    public GameObject tooltip;
+
     public Item Item { get; set; }
     public UIContainer FromContainer { get; set; }
     public bool IsHoldingItem { get { return Item != null && FromContainer != null; } }
