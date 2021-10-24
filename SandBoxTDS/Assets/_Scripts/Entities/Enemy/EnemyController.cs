@@ -67,7 +67,7 @@ public class EnemyController : Entity, IMobile {
     }
 
     void UpdateAttackTimer() {
-        if (AttackTimerZero() && (attackTimer -= Time.deltaTime) <= 0.0f) {
+        if (!AttackTimerZero() && (attackTimer -= Time.deltaTime) <= 0.0f) {
             NextEntityState = EntityState = EntityState.FREE;
         }
     }
