@@ -5,19 +5,13 @@ public enum EnemyType { RANGED, MELEE, PATTERNED }
 [RequireComponent(typeof(MobileEntity))]
 [RequireComponent(typeof(EntityStatusEffectHandler))]
 [RequireComponent(typeof(EnemySightHandler))]
+[RequireComponent(typeof(PatrolHandler))]
 public class EnemyController : Entity, IMobile {
-    const float MinPatrolTime = 3.0f;
-    const float MaxPatrolTime = 6.0f;
-
     EntityStatusEffectHandler seHandler;
-    EnemySightHandler sh;
-
-    Vector3 patrolDirection;
-    float patrolTimer;
-    bool Patrolling { get { return patrolTimer > 0.0f; } }
+    EnemySightHandler sightHandler;
+    PatrolHandler patrolHandler;
 
     float attackTimer;
-    bool AttackTimerZero { get { return attackTimer <= 0.0f; } }
 
     #region Inspector Variables
     [SerializeField] EnemyType enemyType;
@@ -28,19 +22,19 @@ public class EnemyController : Entity, IMobile {
     #endregion
 
     void Start() {
-        sh = GetComponent<EnemySightHandler>();
-        sh.Setup(enemyType);        
+        sightHandler = GetComponent<EnemySightHandler>();
+        patrolHandler = GetComponent<PatrolHandler>();
+        sightHandler.Setup(enemyType);
     }
 
     void Update() {
-        UpdatePatrolTimer();
         UpdateAttackTimer();
     }
 
-    //Called every frame
+    //Called every frame from MobileEntity
     public (Vector3, int) GetMove() {
-        if (sh.CheckForTargetInSight()) {
-            transform.LookAt(sh.GetTargetSpottedFacing(EntityType == EntityType.CRITTER));
+        if (sightHandler.CheckForTargetInSight()) {
+            transform.LookAt(sightHandler.GetTargetSpottedFacing(EntityType == EntityType.CRITTER));
 
             if (CanAttack()) {
                 Attack();
@@ -48,16 +42,16 @@ public class EnemyController : Entity, IMobile {
             }
             return (Vector3.forward, Slowed() ? 0 : 1);
         }
-        transform.LookAt(GetRandomFacing());
+        transform.LookAt(patrolHandler.GetRandomFacing());
         return (Vector3.forward, 0);
     }
 
     bool CanAttack() {
-        return !sh.TargetTooClose() && TargetInAttackRange() && AttackTimerZero && CanAct();
+        return !sightHandler.TargetTooClose() && TargetInAttackRange() && AttackTimerZero() && CanAct();
     }
 
     bool TargetInAttackRange() {
-        return sh.DistanceToTarget() <= attackRange;
+        return sightHandler.DistanceToTarget() <= attackRange;
     }
 
     public virtual void Attack() {
@@ -68,23 +62,12 @@ public class EnemyController : Entity, IMobile {
         StateTimer = attackToMoveTime;
     }
 
-    Vector3 GetRandomFacing() {
-        if (Patrolling) {
-            return patrolDirection;
-        }
-        patrolDirection = new Vector3(0.0f, Random.Range(-180f, 180f), 0.0f);
-        patrolTimer = Random.Range(MinPatrolTime, MaxPatrolTime);
-        return patrolDirection;
-    }    
-
-    void UpdatePatrolTimer() {
-        if (!sh.TargetSpotted && Patrolling) {
-            patrolTimer -= Time.deltaTime;
-        }
+    public bool AttackTimerZero() {
+        return attackTimer <= 0.0f;
     }
 
     void UpdateAttackTimer() {
-        if (!AttackTimerZero && (attackTimer -= Time.deltaTime) <= 0.0f) {
+        if (AttackTimerZero() && (attackTimer -= Time.deltaTime) <= 0.0f) {
             NextEntityState = EntityState = EntityState.FREE;
         }
     }

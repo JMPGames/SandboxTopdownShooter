@@ -1,9 +1,5 @@
 ﻿using UnityEngine;
 
-/*
- This class handles player input and stamina logic 
- */
-
 [RequireComponent(typeof(MobileEntity))]
 [RequireComponent(typeof(EntityStatusEffectHandler))]
 public class PlayerController : Entity, IMobile {
@@ -21,20 +17,17 @@ public class PlayerController : Entity, IMobile {
         currentWeapon = 0;
     }
 
-    void Update() {
-        UpdateSprint();
-    }
-
+    //Called every frame from MobileEntity
     public (Vector3, int) GetMove() {
         (Vector3, int) result = (new Vector3(Input.GetAxisRaw("Horizontal"), 0.0f, Input.GetAxisRaw("Vertical")), 0);
         if (Input.GetMouseButton(0) && CanAct()) {
             if (CurrentWeapon().CanFire()) {
                 CurrentWeapon().Fire();
             }
-            //Aiming animation with laser
+            //Aiming animation with laser sights
         }
         else if (Input.GetMouseButton(1)) {
-            //Aiming animation with laser
+            //Aiming animation with laser sights
         }
         else if (Slowed()) {
             //Slowed animation
@@ -51,6 +44,7 @@ public class PlayerController : Entity, IMobile {
             //Normal run animation
         }
         AimAtMouseCursor();
+        UpdateSprint();
         return result;
     }
 
@@ -79,10 +73,8 @@ public class PlayerController : Entity, IMobile {
                 sprinting = false;
             }
         }
-        else if (SprintStamina < MaxSprintStamina) {
-            if ((SprintStamina += Time.deltaTime) > MaxSprintStamina) { 
-                SprintStamina = MaxSprintStamina;
-            }
+        else if (SprintStamina < MaxSprintStamina && (SprintStamina += Time.deltaTime) > MaxSprintStamina) {
+            SprintStamina = MaxSprintStamina;
         }
     }
 }

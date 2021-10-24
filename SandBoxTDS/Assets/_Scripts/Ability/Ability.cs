@@ -30,17 +30,14 @@ public class Ability : GameObj, IUsable {
     }
 
     public void DecreaseCooldown(bool total = true, float amount = 0) {
-        if (total || (CooldownTimer - amount) < 0.0f) {
+        if (total || (CooldownTimer -= amount) < 0.0f) {
             CooldownTimer = 0.0f;
-        }
-        else {
-            CooldownTimer -= amount;
         }
     }
 
     void UpdateCooldown() {
-        if (!Usable()) {
-            CooldownTimer -= Time.deltaTime;
+        if (!Usable() && (CooldownTimer -= Time.deltaTime) < 0.0f) {
+            CooldownTimer = 0.0f;
         }
     }
 }
