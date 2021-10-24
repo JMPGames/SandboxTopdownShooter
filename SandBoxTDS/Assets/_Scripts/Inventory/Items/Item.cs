@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public enum ItemType { CONSUMABLE, RESOURCE, WEAPON, ARMOR, QUEST, JUNK }
+public enum ItemType { CONSUMABLE, RESOURCE, WEAPON, CHIP, QUEST, JUNK }
 
 public class Item : GameObj {
     public ItemType ItemType { get { return itemType; } }
@@ -37,6 +37,10 @@ public class Item : GameObj {
 
     public void Sell(int numberToSell) {
         //remove from inventory and give gold
+    }
+
+    public virtual string GetDescription(string addition = "") {
+        return $"{Title}    Price: {Price}  Type: {ItemType.ToString()}\n{addition}";
     }
 
     public void DurabilityLoss(int amount) {
@@ -79,6 +83,10 @@ public class Item : GameObj {
 
     public int CostToFullRepair() {
         return DurabilityMissing() * goldToRepairPerPoint;
+    }
+
+    public bool IsBroken() {
+        return Durability <= 0;
     }
 
     bool CantRepair() {

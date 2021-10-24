@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Armor : Item, IEquippable, IRepairable {
+public class Chip : Item, IEquippable, IRepairable {
     public Ability Ability { get { return ability; } }
 
     [SerializeField] Ability ability;
@@ -15,9 +15,13 @@ public class Armor : Item, IEquippable, IRepairable {
         throw new System.NotImplementedException();
     }
 
+    public override string GetDescription(string addition = "") {
+        return base.GetDescription(addition);
+    }
+
     public void AdjustStats(bool equipping = true) {
         throw new System.NotImplementedException();
-    }
+    }    
 
     public void LoseDurability(int amount) {
         DurabilityLoss(amount);

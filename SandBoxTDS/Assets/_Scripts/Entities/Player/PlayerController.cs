@@ -5,11 +5,10 @@
 public class PlayerController : Entity, IMobile {
     const float MaxSprintStamina = 100;
 
-    public float SprintStamina { get; private set; }
-
     EntityStatusEffectHandler seHandler;
     Camera cam;
     int currentWeapon;
+    float sprintStamina;
     bool sprinting;
 
     void Start() {
@@ -32,7 +31,7 @@ public class PlayerController : Entity, IMobile {
         else if (Slowed()) {
             //Slowed animation
         }
-        else if (Input.GetKey(KeyCode.LeftShift) && SprintStamina > 0.0f) {
+        else if (Input.GetKey(KeyCode.LeftShift) && sprintStamina > 0.0f) {
             result.Item2 = 2;
             if (!sprinting) {
                 sprinting = true;
@@ -68,13 +67,13 @@ public class PlayerController : Entity, IMobile {
                 sprinting = false;
                 return;
             }
-            if ((SprintStamina -= Time.deltaTime) < 0.0f) {
-                SprintStamina = 0.0f;
+            if ((sprintStamina -= Time.deltaTime) < 0.0f) {
+                sprintStamina = 0.0f;
                 sprinting = false;
             }
         }
-        else if (SprintStamina < MaxSprintStamina && (SprintStamina += Time.deltaTime) > MaxSprintStamina) {
-            SprintStamina = MaxSprintStamina;
+        else if (sprintStamina < MaxSprintStamina && (sprintStamina += Time.deltaTime) > MaxSprintStamina) {
+            sprintStamina = MaxSprintStamina;
         }
     }
 }

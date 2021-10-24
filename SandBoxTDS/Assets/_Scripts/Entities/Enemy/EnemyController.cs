@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 
-public enum EnemyType { RANGED, MELEE, PATTERNED }
-
 [RequireComponent(typeof(MobileEntity))]
 [RequireComponent(typeof(EntityStatusEffectHandler))]
 [RequireComponent(typeof(EnemySightHandler))]
@@ -11,20 +9,17 @@ public class EnemyController : Entity, IMobile {
     EnemySightHandler sightHandler;
     PatrolHandler patrolHandler;
 
-    float attackTimer;
-
-    #region Inspector Variables
-    [SerializeField] EnemyType enemyType;
     [SerializeField] int damage;
     [SerializeField] float attackRange;
     [SerializeField] float attackSpeed;
     [SerializeField] float attackToMoveTime;
-    #endregion
+
+    float attackTimer;
 
     void Start() {
         sightHandler = GetComponent<EnemySightHandler>();
         patrolHandler = GetComponent<PatrolHandler>();
-        sightHandler.Setup(enemyType);
+        sightHandler.Setup();
     }
 
     void Update() {
@@ -55,7 +50,6 @@ public class EnemyController : Entity, IMobile {
     }
 
     public virtual void Attack() {
-        //animation, fire bullet/melee hit check, sound
         EntityState = EntityState.SLOWED_NOACT;
         NextEntityState = EntityState.NOACT;
         attackTimer = attackSpeed;

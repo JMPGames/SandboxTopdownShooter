@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
 public class PatrolHandler : MonoBehaviour {
-    const float MinPatrolTime = 3.0f;
-    const float MaxPatrolTime = 6.0f;
+    [SerializeField] float minPatrolTime = 3.0f;
+    [SerializeField] float maxPatrolTime = 6.0f;
 
     Vector3 patrolDirection;
     float patrolTimer;
@@ -20,7 +20,7 @@ public class PatrolHandler : MonoBehaviour {
             return patrolDirection;
         }
         patrolDirection = new Vector3(0.0f, Random.Range(-180f, 180f), 0.0f);
-        patrolTimer = Random.Range(MinPatrolTime, MaxPatrolTime);
+        patrolTimer = Random.Range(minPatrolTime, maxPatrolTime);
         return patrolDirection;
     }
 

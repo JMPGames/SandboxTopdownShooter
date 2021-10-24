@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Projectile : MonoBehaviour {
     int id;
     int damage;
     bool playerProjectile;
 
+    [SerializeField] string title;
     [SerializeField] float range_inSeconds;
     [SerializeField] float speed;
     [SerializeField] bool explosive;
@@ -19,8 +18,7 @@ public class Projectile : MonoBehaviour {
     }
 
     public string GetDetails() {
-        //get weapon tooltip additional details
-        return "";
+        return $"{title}\nRange: {range_inSeconds}\nSpeed: {speed}";
     }
 
     public void Fire(bool playerProjectile, int damage) {

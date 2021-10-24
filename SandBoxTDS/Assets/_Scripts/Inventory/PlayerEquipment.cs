@@ -27,7 +27,7 @@ public class PlayerEquipment : MonoBehaviour {
         return weaponSlots[slot].Item as Weapon;
     }
 
-    public void ArmorRightClickEquip(Slot fromSlot, Armor armor) {
+    public void ArmorRightClickEquip(Slot fromSlot, Chip armor) {
         RightClickEquip(armorSlots, fromSlot, armor);
     }
 
@@ -35,7 +35,7 @@ public class PlayerEquipment : MonoBehaviour {
         if (armorSlots[slot].IsEmpty) {
             return null;
         }
-        return (armorSlots[slot].Item as Armor).Ability;
+        return (armorSlots[slot].Item as Chip).Ability;
     }
 
     public void ConsumableRightClickEquip(Slot fromSlot, Consumable consumable) {

@@ -1,28 +1,25 @@
 ﻿using UnityEngine;
 
 public class EnemySightHandler : MonoBehaviour {
-    const float LoseSightMod = 1.5f;
-
-    Transform target;
-    EnemyType enemyType;
-    public bool TargetSpotted { get; private set; }
-
     [SerializeField] float sightRange;
+    [SerializeField] float loseSightMod = 1.5f;
     [SerializeField] float minDistanceFromTarget;
 
-    public void Setup(EnemyType enemyType) {
+    Transform target;
+    bool targetSpotted;
+
+    public void Setup() {
         target = GameObject.FindGameObjectWithTag("Player").transform;
-        this.enemyType = enemyType;
     }
 
     public bool CheckForTargetInSight() {
-        if (TargetSpotted && DistanceToTarget() > (sightRange * LoseSightMod)) {
-            TargetSpotted = false;
+        if (targetSpotted && DistanceToTarget() > (sightRange * loseSightMod)) {
+            targetSpotted = false;
         }
-        else if (!TargetSpotted && DistanceToTarget() < sightRange) {
-            TargetSpotted = true;
+        else if (!targetSpotted && DistanceToTarget() < sightRange) {
+            targetSpotted = true;
         }
-        return TargetSpotted;
+        return targetSpotted;
     }
 
     public Vector3 GetTargetSpottedFacing(bool critter) {
@@ -38,6 +35,6 @@ public class EnemySightHandler : MonoBehaviour {
     }
 
     public bool TargetTooClose() {
-        return enemyType == EnemyType.RANGED && DistanceToTarget() <= minDistanceFromTarget;
+        return DistanceToTarget() <= minDistanceFromTarget;
     }
 }

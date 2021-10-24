@@ -29,6 +29,13 @@ public class Weapon : Item, IEquippable, IRepairable {
         UpdateTimers();
     }
 
+    public override string GetDescription(string addition = "") {
+        string output = $"Damage: {damage}\nFire Rate: {attackSpeed}\nAmmo Type: {reloadType.ToString()}\n";
+        string ammoInfo = $"Projectile: {projectile.GetComponent<Projectile>().GetDetails()}";
+        output += reloadType == ReloadType.CLIPLESS ? $"{ammoInfo}" : $"Ammo: {Ammo} / {maxAmmoCharge}\n{ammoInfo}";
+        return base.GetDescription(output);
+    }
+
     public virtual void Fire() {
         //Check for Projectile Object pool for projectile with id:id
         //Instantiate projectile if no match in object pooling system
@@ -45,7 +52,7 @@ public class Weapon : Item, IEquippable, IRepairable {
     }
 
     public bool CanFire() {
-        return (ReloadType == ReloadType.CLIPLESS || Ammo > ammoPerShot) && attackTimer <= 0.0f;
+        return (ReloadType == ReloadType.CLIPLESS || Ammo > ammoPerShot) && !IsBroken() && attackTimer <= 0.0f;
     }
 
     public void ManualReload(Entity entity) {
