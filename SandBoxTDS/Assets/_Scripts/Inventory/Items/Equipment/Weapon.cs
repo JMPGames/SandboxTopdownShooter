@@ -4,12 +4,7 @@ public enum ReloadType { CLIPLESS, MANUAL, AUTO }
 public class Weapon : Item, IEquippable, IRepairable {
     const float TimeAfterShootingToAutoReload = 5.0f;
 
-    public ReloadType ReloadType { get { return reloadType; } }
-    public int Damage { get { return damage; } }
-    public float AttackSpeed { get { return attackSpeed; } }
-    public int MaxAmmo { get { return maxAmmoCharge; } }
-    public int Ammo { get; private set; }
-
+    int ammo;
     float attackTimer;
     float autoReloadTimer;
     float secondsSinceLastShot;
@@ -19,7 +14,7 @@ public class Weapon : Item, IEquippable, IRepairable {
     [SerializeField] GameObject projectile;
     [SerializeField] int damage;
     [SerializeField] float attackSpeed;
-    [SerializeField] int maxAmmoCharge;
+    [SerializeField] int maxAmmo;
     [SerializeField] int ammoPerShot;
     [SerializeField] int ammoPerAutoReload;
     [SerializeField] float reloadSpeed;
@@ -32,7 +27,7 @@ public class Weapon : Item, IEquippable, IRepairable {
     public override string GetDescription(string addition = "") {
         string output = $"Damage: {damage}\nFire Rate: {attackSpeed}\nAmmo Type: {reloadType.ToString()}\n";
         string ammoInfo = $"Projectile: {projectile.GetComponent<Projectile>().GetDetails()}";
-        output += reloadType == ReloadType.CLIPLESS ? $"{ammoInfo}" : $"Ammo: {Ammo} / {maxAmmoCharge}\n{ammoInfo}";
+        output += reloadType == ReloadType.CLIPLESS ? $"{ammoInfo}" : $"Ammo: {ammo} / {maxAmmo}\n{ammoInfo}";
         return base.GetDescription(output);
     }
 
@@ -43,8 +38,8 @@ public class Weapon : Item, IEquippable, IRepairable {
         //Get direction
         //Projectile.Fire(direction, damage);
 
-        if (ReloadType != ReloadType.CLIPLESS && (Ammo -= ammoPerShot) < 0) {
-            Ammo = 0;
+        if (reloadType != ReloadType.CLIPLESS && (ammo -= ammoPerShot) < 0) {
+            ammo = 0;
         }
         attackTimer = attackSpeed;
         autoReloadTimer = 0;
@@ -52,7 +47,7 @@ public class Weapon : Item, IEquippable, IRepairable {
     }
 
     public bool CanFire() {
-        return (ReloadType == ReloadType.CLIPLESS || Ammo > ammoPerShot) && !IsBroken() && attackTimer <= 0.0f;
+        return (reloadType == ReloadType.CLIPLESS || ammo > ammoPerShot) && !IsBroken() && attackTimer <= 0.0f;
     }
 
     public void ManualReload(Entity entity) {
@@ -62,8 +57,8 @@ public class Weapon : Item, IEquippable, IRepairable {
     }
 
     void AutoReload() {
-        if ((Ammo += ammoPerAutoReload) > MaxAmmo) {
-            Ammo = MaxAmmo;
+        if ((ammo += ammoPerAutoReload) > maxAmmo) {
+            ammo = maxAmmo;
         }
         autoReloadTimer = reloadSpeed;
     }
@@ -98,7 +93,7 @@ public class Weapon : Item, IEquippable, IRepairable {
             attackTimer -= Time.deltaTime;
         }
 
-        if (Ammo < MaxAmmo && ReloadType == ReloadType.AUTO) {
+        if (ammo < maxAmmo && reloadType == ReloadType.AUTO) {
             if (autoReloadTimer > 0.0f) {
                 autoReloadTimer -= Time.deltaTime;
             }

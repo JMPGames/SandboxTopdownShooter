@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(MobileEntity))]
+[RequireComponent(typeof(EntityAbilityHandler))]
 [RequireComponent(typeof(EntityStatusEffectHandler))]
 public class PlayerController : Entity, IMobile {
     const float MaxSprintStamina = 100;
 
+    EntityAbilityHandler abilityHandler;
     EntityStatusEffectHandler seHandler;
     Camera cam;
     int currentWeapon;
@@ -12,6 +14,8 @@ public class PlayerController : Entity, IMobile {
     bool sprinting;
 
     void Start() {
+        abilityHandler = GetComponent<EntityAbilityHandler>();
+        seHandler = GetComponent<EntityStatusEffectHandler>();
         cam = Camera.main;
         currentWeapon = 0;
     }

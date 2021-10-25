@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(MobileEntity))]
+[RequireComponent(typeof(EntityAbilityHandler))]
 [RequireComponent(typeof(EntityStatusEffectHandler))]
 [RequireComponent(typeof(EnemySightHandler))]
 [RequireComponent(typeof(PatrolHandler))]
 public class EnemyController : Entity, IMobile {
+    EntityAbilityHandler abilityHandler;
     EntityStatusEffectHandler seHandler;
     EnemySightHandler sightHandler;
     PatrolHandler patrolHandler;
@@ -17,9 +19,10 @@ public class EnemyController : Entity, IMobile {
     float attackTimer;
 
     void Start() {
+        abilityHandler = GetComponent<EntityAbilityHandler>();
+        seHandler = GetComponent<EntityStatusEffectHandler>();
         sightHandler = GetComponent<EnemySightHandler>();
         patrolHandler = GetComponent<PatrolHandler>();
-        sightHandler.Setup();
     }
 
     void Update() {

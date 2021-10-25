@@ -5,13 +5,11 @@ public enum ItemType { CONSUMABLE, RESOURCE, WEAPON, CHIP, QUEST, JUNK }
 public class Item : GameObj {
     public ItemType ItemType { get { return itemType; } }
     public UIContainer Container { get; set; }
-    public int Price { get { return price; } }
 
     public int MaxStackSize { get { return maxStackSize; } }
     public int CurrentStackSize { get; set; }
 
-    public int MaxDurability { get { return maxDurability; } }
-    public int Durability { get; private set; }
+    int durability;
 
     #region Inspector Variables
     [SerializeField] ItemType itemType;
@@ -32,20 +30,27 @@ public class Item : GameObj {
     }
 
     public bool CanAfford(int numberToBuy) {
-        return (Price * numberToBuy) <= Inventory.instance.Gold;
+        return (price * numberToBuy) <= Inventory.instance.Gold;
     }
 
     public void Sell(int numberToSell) {
-        //remove from inventory and give gold
+        if (numberToSell >= CurrentStackSize) {
+            Inventory.instance.Gold += price * CurrentStackSize;
+            //remove item from inventory
+        }
+        else {
+            Inventory.instance.Gold += price * numberToSell;
+            CurrentStackSize -= numberToSell;
+        }
     }
 
     public virtual string GetDescription(string addition = "") {
-        return $"{Title}    Price: {Price}  Type: {ItemType.ToString()}\n{addition}";
+        return $"{Title} x{CurrentStackSize}\nDurability: {durability} / {maxDurability}\nPrice: {price}\nType: {ItemType.ToString()}\n{addition}";
     }
 
     public void DurabilityLoss(int amount) {
-        if ((Durability -= amount) <= 0) {
-            Durability = 0;
+        if ((durability -= amount) <= 0) {
+            durability = 0;
         }
     }
 
@@ -64,21 +69,21 @@ public class Item : GameObj {
         }
 
         if (Inventory.instance.Gold >= CostToFullRepair()) {
-            Durability = MaxDurability;
+            durability = maxDurability;
             Inventory.instance.Gold -= CostToFullRepair();
         }
         else {
-            EuclideanRepair(MaxDurability);
+            EuclideanRepair(maxDurability);
         }
         return true;
     }
 
     public int DurabilityMissing() {
-        return MaxDurability - Durability;
+        return maxDurability - durability;
     }
 
     public bool DurabilityIsMaxed() {
-        return Durability >= MaxDurability;
+        return durability >= maxDurability;
     }
 
     public int CostToFullRepair() {
@@ -86,7 +91,7 @@ public class Item : GameObj {
     }
 
     public bool IsBroken() {
-        return Durability <= 0;
+        return durability <= 0;
     }
 
     bool CantRepair() {
@@ -101,7 +106,7 @@ public class Item : GameObj {
             q += 1;
             r -= goldToRepairPerPoint;
         }
-        Durability += q;
+        durability += q;
         Inventory.instance.Gold = r;
     }
 

@@ -8,7 +8,7 @@ public class EnemySightHandler : MonoBehaviour {
     Transform target;
     bool targetSpotted;
 
-    public void Setup() {
+    public void Start() {
         target = GameObject.FindGameObjectWithTag("Player").transform;
     }
 

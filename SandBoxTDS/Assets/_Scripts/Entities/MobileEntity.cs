@@ -23,16 +23,9 @@ public class MobileEntity : MonoBehaviour {
     }
 
     void Update() {
-        if (entity.CanMove()) {
-            if (entity.EntityType == EntityType.PLAYER) {
-                move = (entity as PlayerController).GetMove();
-            }
-            else if (entity.EntityType == EntityType.NPC) {
-                //move = (entity as NPCController).GetMove();
-            }
-            else {
-                move = (entity as EnemyController).GetMove();
-            }
+        if (entity.CanMove() && entity is IMobile) {
+            move = (entity as IMobile).GetMove();
+            //GetMove();
         }
     }
 
@@ -41,6 +34,20 @@ public class MobileEntity : MonoBehaviour {
             Move();
         }
     }
+
+    /*
+    void GetMove() {
+        if (entity.EntityType == EntityType.PLAYER) {
+            move = (entity as PlayerController).GetMove();
+        }
+        else if (entity.EntityType == EntityType.NPC) {
+            move = (entity as NPCController).GetMove();
+        }
+        else {
+            move = (entity as EnemyController).GetMove();
+        }
+    }
+    */
 
     void Move() {
         rb.velocity = move.Item1 * speeds[move.Item2];
