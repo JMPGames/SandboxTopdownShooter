@@ -1,22 +1,30 @@
 ﻿using UnityEngine;
 
+public enum EnemyType { MELEE, RANGED, TURRET }
+
 [RequireComponent(typeof(MobileEntity))]
 [RequireComponent(typeof(EntityAbilityHandler))]
 [RequireComponent(typeof(EntityStatusEffectHandler))]
 [RequireComponent(typeof(EnemySightHandler))]
 [RequireComponent(typeof(PatrolHandler))]
 public class EnemyController : Entity, IMobile {
+    const float MinStrafeTime = 1.0f;
+    const float MaxStrafeTime = 3.0f;
+
     EntityAbilityHandler abilityHandler;
     EntityStatusEffectHandler seHandler;
     EnemySightHandler sightHandler;
     PatrolHandler patrolHandler;
 
+    [SerializeField] EnemyType enemyType;
     [SerializeField] int damage;
     [SerializeField] float attackRange;
     [SerializeField] float attackSpeed;
     [SerializeField] float attackToMoveTime;
 
     float attackTimer;
+    Vector3 strafeDirection = Vector3.left;
+    float strafeTimer;
 
     void Start() {
         abilityHandler = GetComponent<EntityAbilityHandler>();
@@ -38,7 +46,7 @@ public class EnemyController : Entity, IMobile {
                 Attack();
                 return (Vector3.zero, 0);
             }
-            return (Vector3.forward, Slowed() ? 0 : 1);
+            return (TargetInSightMovement(), Slowed() ? 0 : 1);
         }
         transform.LookAt(patrolHandler.GetRandomFacing());
         return (Vector3.forward, 0);
@@ -57,6 +65,21 @@ public class EnemyController : Entity, IMobile {
         NextEntityState = EntityState.NOACT;
         attackTimer = attackSpeed;
         StateTimer = attackToMoveTime;
+    }
+
+    public Vector3 TargetInSightMovement() {
+        if (enemyType == EnemyType.MELEE) {
+            return Vector3.forward;
+        }
+        else if (enemyType == EnemyType.TURRET) {
+            return Vector3.zero;
+        }
+
+        if ((strafeTimer -= Time.deltaTime) <= 0.0f) {
+            strafeDirection = Random.Range(1, 101) <= 50 ? Vector3.left : Vector3.right;
+            strafeTimer = Random.Range(MinStrafeTime, MaxStrafeTime);
+        }
+        return strafeDirection;
     }
 
     public bool AttackTimerZero() {

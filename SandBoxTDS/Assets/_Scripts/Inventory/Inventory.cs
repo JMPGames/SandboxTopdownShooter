@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(InventoryCursor))]
@@ -21,6 +22,18 @@ public class Inventory : MonoBehaviour {
 
     public bool InventoryIsFull() {
         return inventorySlots.Any(slot => slot.IsEmpty);
+    }
+
+    public List<Item> CheckInventoryForItemById(int id) {
+        List<Item> stacks = new List<Item>();
+
+        foreach(Slot slot in inventorySlots) {
+            if (slot.Item.Id == id && !slot.Item.StackIsFull()) {
+                stacks.Add(slot.Item);
+            }
+        }
+        stacks.Sort((i1, i2) => i2.CurrentStackSize.CompareTo(i1.CurrentStackSize));
+        return stacks;
     }
 
     public bool AddItem(Item item) {

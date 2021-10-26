@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public enum ItemType { CONSUMABLE, RESOURCE, WEAPON, CHIP, QUEST, JUNK }
 
@@ -24,19 +25,40 @@ public class Item : GameObj {
     }
 
     public void Buy(int numberToBuy) {
-        //check inventory for space
-        //if CanAfford()
-        //add to inventory and take gold
+        if (!CanAfford()) {
+            return;
+        }
+        List<Item> stacksInInventory = Inventory.instance.CheckInventoryForItemById(Id);
+        for (int i = 0; i < numberToBuy; i++) {
+            if (CanAfford()) {
+                if (stacksInInventory.Count > 0 && !stacksInInventory[0].StackIsFull()) {
+                    if ((stacksInInventory[0].CurrentStackSize += 1) >= stacksInInventory[0].MaxStackSize) {
+                        stacksInInventory.RemoveAt(0);
+                    }
+                    Inventory.instance.Gold -= price;
+                    continue;
+                }
+                else if (!Inventory.instance.InventoryIsFull()) {
+                    Inventory.instance.AddItem(this);
+                    if (maxStackSize > 1) {
+                        stacksInInventory.Add(this);
+                    }
+                    Inventory.instance.Gold -= price;
+                    continue;
+                }
+            }
+            break;
+        }
     }
 
-    public bool CanAfford(int numberToBuy) {
-        return (price * numberToBuy) <= Inventory.instance.Gold;
+    public bool CanAfford() {
+        return price <= Inventory.instance.Gold;
     }
 
     public void Sell(int numberToSell) {
         if (numberToSell >= CurrentStackSize) {
             Inventory.instance.Gold += price * CurrentStackSize;
-            //remove item from inventory
+            Container.Remove();
         }
         else {
             Inventory.instance.Gold += price * numberToSell;
