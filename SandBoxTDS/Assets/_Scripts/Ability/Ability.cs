@@ -2,10 +2,12 @@
 
 public class Ability : GameObj, IUsable {
     [SerializeField] float cooldown;
-    float cooldownTimer;    
+    float cooldownTimer;
 
     void Update() {
-        UpdateCooldown();
+        if (!Usable()) {
+            UpdateCooldown();
+        }
     }
 
     public virtual void Use(Entity target = null) {
@@ -25,13 +27,15 @@ public class Ability : GameObj, IUsable {
     }
 
     public virtual void DecreaseCooldown(bool total = true, float amount = 0) {
-        if (total || (cooldownTimer -= amount) < 0.0f) {
+        cooldownTimer -= amount;
+        if (total || cooldownTimer < 0.0f) {
             cooldownTimer = 0.0f;
         }
     }
 
     public virtual void UpdateCooldown() {
-        if (!Usable() && (cooldownTimer -= Time.deltaTime) < 0.0f) {
+        cooldownTimer -= Time.deltaTime;
+        if (cooldownTimer < 0.0f) {
             cooldownTimer = 0.0f;
         }
     }

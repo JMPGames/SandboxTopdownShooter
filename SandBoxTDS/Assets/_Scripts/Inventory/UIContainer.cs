@@ -12,10 +12,8 @@ public class UIContainer : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public bool InventorySlot { get { return ContainerType == ContainerType.INVENTORY; } }
     public bool IsEmpty { get { return Item == null; } }
 
-    #region Inspector Variables
     [SerializeField] ContainerType containerType;
     [SerializeField] Image icon;
-    #endregion
 
     public virtual void Add(Item item) {
         Item = item;

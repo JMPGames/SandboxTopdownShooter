@@ -9,7 +9,6 @@ public class Weapon : Item, IEquippable, IRepairable {
     float autoReloadTimer;
     float secondsSinceLastShot;
 
-    #region Inspector Variables
     [SerializeField] ReloadType reloadType;
     [SerializeField] GameObject projectile;
     [SerializeField] int damage;
@@ -18,7 +17,6 @@ public class Weapon : Item, IEquippable, IRepairable {
     [SerializeField] int ammoPerShot;
     [SerializeField] int ammoPerAutoReload;
     [SerializeField] float reloadSpeed;
-    #endregion
 
     void Update() {
         UpdateTimers();
@@ -38,16 +36,15 @@ public class Weapon : Item, IEquippable, IRepairable {
         //Get direction
         //Projectile.Fire(direction, damage);
 
-        if (reloadType != ReloadType.CLIPLESS && (ammo -= ammoPerShot) < 0) {
-            ammo = 0;
-        }
+        ammo -= reloadType == ReloadType.CLIPLESS ? 0 : ammoPerShot;
+
         attackTimer = attackSpeed;
         autoReloadTimer = 0;
         secondsSinceLastShot = 0;
     }
 
     public bool CanFire() {
-        return (reloadType == ReloadType.CLIPLESS || ammo > ammoPerShot) && !IsBroken() && attackTimer <= 0.0f;
+        return (reloadType == ReloadType.CLIPLESS || ammo >= ammoPerShot) && !IsBroken() && attackTimer <= 0.0f;
     }
 
     public void ManualReload(Entity entity) {
@@ -57,7 +54,8 @@ public class Weapon : Item, IEquippable, IRepairable {
     }
 
     void AutoReload() {
-        if ((ammo += ammoPerAutoReload) > maxAmmo) {
+        ammo += ammoPerAutoReload;
+        if (ammo > maxAmmo) {
             ammo = maxAmmo;
         }
         autoReloadTimer = reloadSpeed;
@@ -93,7 +91,7 @@ public class Weapon : Item, IEquippable, IRepairable {
             attackTimer -= Time.deltaTime;
         }
 
-        if (ammo < maxAmmo && reloadType == ReloadType.AUTO) {
+        if (reloadType == ReloadType.AUTO && ammo < maxAmmo) {
             if (autoReloadTimer > 0.0f) {
                 autoReloadTimer -= Time.deltaTime;
             }

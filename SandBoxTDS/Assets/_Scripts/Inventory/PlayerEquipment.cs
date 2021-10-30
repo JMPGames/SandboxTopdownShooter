@@ -21,10 +21,7 @@ public class PlayerEquipment : MonoBehaviour {
     }
 
     public Weapon GetWeaponAtSlot(int slot) {
-        if (weaponSlots[slot].IsEmpty) {
-            return null;
-        }
-        return weaponSlots[slot].Item as Weapon;
+        return weaponSlots[slot].IsEmpty ? null : weaponSlots[slot].Item as Weapon;
     }
 
     public void ArmorRightClickEquip(Slot fromSlot, Chip armor) {
@@ -32,14 +29,15 @@ public class PlayerEquipment : MonoBehaviour {
     }
 
     public Ability GetAbilityFromArmorSlot(int slot) {
-        if (armorSlots[slot].IsEmpty) {
-            return null;
-        }
-        return (armorSlots[slot].Item as Chip).Ability;
+        return armorSlots[slot].IsEmpty ? null : (armorSlots[slot].Item as Chip).Ability;
     }
 
     public void ConsumableRightClickEquip(Slot fromSlot, Consumable consumable) {
         RightClickEquip(consumableSlots, fromSlot, consumable);
+    }
+
+    public Consumable GetConsumableFromAtSlot(int slot) {
+        return consumableSlots[slot].IsEmpty ? null : consumableSlots[slot].Item as Consumable;
     }
 
     void RightClickEquip(EquipmentSlot[] slots, Slot fromSlot, Item item) {

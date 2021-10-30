@@ -12,27 +12,26 @@ public class Item : GameObj {
 
     int durability;
 
-    #region Inspector Variables
     [SerializeField] ItemType itemType;
     [SerializeField] int price;
     [SerializeField] int maxStackSize;
     [SerializeField] int maxDurability;
     [SerializeField] int goldToRepairPerPoint;
-    #endregion
 
-    public bool StackIsFull() {
-        return CurrentStackSize >= MaxStackSize;
+    public bool Stackable() {
+        return this is IStackable && CurrentStackSize < MaxStackSize;
     }
 
     public void Buy(int numberToBuy) {
         if (!CanAfford()) {
             return;
         }
-        List<Item> stacksInInventory = Inventory.instance.CheckInventoryForItemById(Id);
+        List<Item> stacksInInventory = Inventory.instance.CheckInventoryForStackableItemById(Id);
         for (int i = 0; i < numberToBuy; i++) {
             if (CanAfford()) {
-                if (stacksInInventory.Count > 0 && !stacksInInventory[0].StackIsFull()) {
-                    if ((stacksInInventory[0].CurrentStackSize += 1) >= stacksInInventory[0].MaxStackSize) {
+                if (stacksInInventory.Count > 0 && !stacksInInventory[0].Stackable()) {
+                    stacksInInventory[0].CurrentStackSize += 1;
+                    if (stacksInInventory[0].CurrentStackSize >= stacksInInventory[0].MaxStackSize) {
                         stacksInInventory.RemoveAt(0);
                     }
                     Inventory.instance.Gold -= price;
@@ -71,7 +70,8 @@ public class Item : GameObj {
     }
 
     public void DurabilityLoss(int amount) {
-        if ((durability -= amount) <= 0) {
+        durability -= amount;
+        if (durability <= 0) {
             durability = 0;
         }
     }

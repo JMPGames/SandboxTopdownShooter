@@ -33,12 +33,10 @@ public class EnemyController : Entity, IMobile {
         patrolHandler = GetComponent<PatrolHandler>();
     }
 
-    void Update() {
-        UpdateAttackTimer();
-    }
-
     //Called every frame from MobileEntity
     public (Vector3, int) GetMove() {
+        UpdateAttackTimer();
+
         if (sightHandler.CheckForTargetInSight()) {
             transform.LookAt(sightHandler.GetTargetSpottedFacing(EntityType == EntityType.CRITTER));
 
@@ -87,8 +85,11 @@ public class EnemyController : Entity, IMobile {
     }
 
     void UpdateAttackTimer() {
-        if (!AttackTimerZero() && (attackTimer -= Time.deltaTime) <= 0.0f) {
-            NextEntityState = EntityState = EntityState.FREE;
+        if (!AttackTimerZero()) {
+            attackTimer -= Time.deltaTime;
+            if (attackTimer <= 0.0f) {
+                NextEntityState = EntityState = EntityState.FREE;
+            }
         }
     }
 }

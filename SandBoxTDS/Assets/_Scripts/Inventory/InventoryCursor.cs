@@ -7,7 +7,7 @@ public class InventoryCursor : MonoBehaviour {
 
     public Item Item { get; set; }
     public UIContainer FromContainer { get; set; }
-    public bool IsHoldingItem { get { return Item != null && FromContainer != null; } }
+    public bool IsHoldingItem { get { return Item != null; } }
     public ItemType HeldItemType { get { return Item.ItemType; } }
 
     void Awake() {

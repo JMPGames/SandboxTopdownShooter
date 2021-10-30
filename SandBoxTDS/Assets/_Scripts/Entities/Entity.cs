@@ -21,14 +21,16 @@ public class Entity : GameObj, IDamagable {
 
     public void GainHealth(int amount) {
         //PopUpText.Popup(this.position, amount, green);
-        if ((Health += amount) > MaxHealth) {
+        Health += amount;
+        if (Health > MaxHealth) {
             Health = MaxHealth;
         }
     }
 
     public void LoseHealth(int amount) {
         //PopUpText.Popup(this.position, amount, red);
-        if ((Health -= amount) <= 0) {
+        Health -= amount;
+        if (Health <= 0) {
             Health = 0;
             Destroyed();
         }
@@ -39,7 +41,7 @@ public class Entity : GameObj, IDamagable {
     }
 
     public bool CanMove() {
-        return EntityState != EntityState.IMMOBILE && EntityState != EntityState.IMMOBILE_NOACT;
+        return EntityState != EntityState.IMMOBILE && EntityState != EntityState.IMMOBILE_NOACT && this is IMobile;
     }
 
     public bool CanAct() {
@@ -57,8 +59,11 @@ public class Entity : GameObj, IDamagable {
     }
 
     void UpdateStateTimers() {
-        if (!IsDead() && StateTimer > 0.0f && (StateTimer -= Time.deltaTime) <= 0.0f) {
-            EntityState = NextEntityState;
+        if (!IsDead() && StateTimer > 0.0f) {
+            StateTimer -= Time.deltaTime;
+            if (StateTimer <= 0.0f) {
+                EntityState = NextEntityState;
+            }
         }
     }
 }

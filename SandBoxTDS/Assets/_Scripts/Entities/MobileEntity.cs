@@ -7,11 +7,9 @@ public class MobileEntity : MonoBehaviour {
     Rigidbody rb;
     float[] speeds;
 
-    #region Inspector Variables
-    [SerializeField] float maxSpeed;
-    [SerializeField] float normalSpeed;
-    [SerializeField] float minSpeed;
-    #endregion
+    [SerializeField] float minSpeed = 3.0f;
+    [SerializeField] float normalSpeed = 5.0f;
+    [SerializeField] float maxSpeed = 7.0f;
 
     void Awake() {
         speeds = new float[3] { minSpeed, normalSpeed, maxSpeed };
@@ -20,36 +18,18 @@ public class MobileEntity : MonoBehaviour {
     void Start() {
         entity = GetComponent<Entity>();
         rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
     }
 
     void Update() {
-        if (entity.CanMove() && entity is IMobile) {
+        if (entity.CanMove()) {
             move = (entity as IMobile).GetMove();
-            //GetMove();
         }
     }
 
     void FixedUpdate() {
         if (entity.CanMove()) {
-            Move();
+            rb.velocity = move.Item1 * speeds[move.Item2];
         }
-    }
-
-    /*
-    void GetMove() {
-        if (entity.EntityType == EntityType.PLAYER) {
-            move = (entity as PlayerController).GetMove();
-        }
-        else if (entity.EntityType == EntityType.NPC) {
-            move = (entity as NPCController).GetMove();
-        }
-        else {
-            move = (entity as EnemyController).GetMove();
-        }
-    }
-    */
-
-    void Move() {
-        rb.velocity = move.Item1 * speeds[move.Item2];
     }
 }

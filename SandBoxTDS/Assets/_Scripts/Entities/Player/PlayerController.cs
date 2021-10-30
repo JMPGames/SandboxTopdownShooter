@@ -22,6 +22,7 @@ public class PlayerController : Entity, IMobile {
 
     //Called every frame from MobileEntity
     public (Vector3, int) GetMove() {
+        UpdateSprint();
         (Vector3, int) result = (new Vector3(Input.GetAxisRaw("Horizontal"), 0.0f, Input.GetAxisRaw("Vertical")), 0);
         if (Input.GetMouseButton(0) && CanAct()) {
             if (CurrentWeapon().CanFire()) {
@@ -47,7 +48,6 @@ public class PlayerController : Entity, IMobile {
             //Normal run animation
         }
         AimAtMouseCursor();
-        UpdateSprint();
         return result;
     }
 
@@ -71,13 +71,18 @@ public class PlayerController : Entity, IMobile {
                 sprinting = false;
                 return;
             }
-            if ((sprintStamina -= Time.deltaTime) < 0.0f) {
+
+            sprintStamina -= Time.deltaTime;
+            if (sprintStamina < 0.0f) {
                 sprintStamina = 0.0f;
                 sprinting = false;
             }
         }
-        else if (sprintStamina < MaxSprintStamina && (sprintStamina += Time.deltaTime) > MaxSprintStamina) {
-            sprintStamina = MaxSprintStamina;
+        else if (sprintStamina < MaxSprintStamina) {
+            sprintStamina += Time.deltaTime;
+            if (sprintStamina > MaxSprintStamina) {
+                sprintStamina = MaxSprintStamina;
+            }
         }
     }
 }

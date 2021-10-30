@@ -318,9 +318,11 @@ GameObject:
   - component: {fileID: 733063350}
   - component: {fileID: 733063349}
   - component: {fileID: 733063348}
-  - component: {fileID: 733063352}
-  - component: {fileID: 733063353}
+  - component: {fileID: 733063356}
+  - component: {fileID: 733063355}
   - component: {fileID: 733063354}
+  - component: {fileID: 733063353}
+  - component: {fileID: 733063352}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -404,23 +406,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &733063352
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 733063347}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 0
---- !u!114 &733063353
+--- !u!114 &733063352
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -437,12 +423,20 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   entityType: 0
-  abilities:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   maxHealth: 0
+--- !u!114 &733063353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 733063347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83416ea429996df4c8e52330fb861424, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  immunities: []
 --- !u!114 &733063354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,20 +446,45 @@ MonoBehaviour:
   m_GameObject: {fileID: 733063347}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59a2890f69e6809439c7254235923584, type: 3}
+  m_Script: {fileID: 11500000, guid: 951b35b337cb3bd44b1775b4869e39b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  title: 
-  description: 
-  buyPrice: 0
-  sellPrice: 0
-  stackSize: 0
-  maxStackSize: 0
-  icon: {fileID: 0}
-  itemsToCraft: []
-  amountToCraft: 
-  <Slot>k__BackingField: {fileID: 0}
+  abilities:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!114 &733063355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 733063347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9fb688aa8730d24bb14a89552f12f34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minSpeed: 2.5
+  normalSpeed: 4
+  maxSpeed: 6
+--- !u!54 &733063356
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 733063347}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

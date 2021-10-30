@@ -32,7 +32,8 @@ public class NPCController : Entity, IMobile {
     }
 
     void DialogOptionIncrement() {
-        if ((dialogOption += 1) > dialog.Length) {
+        dialogOption += 1;
+        if (dialogOption >= dialog.Length) {
             dialogOption = 0;
         }
     }

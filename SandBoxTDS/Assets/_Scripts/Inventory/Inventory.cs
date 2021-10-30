@@ -24,16 +24,25 @@ public class Inventory : MonoBehaviour {
         return inventorySlots.Any(slot => slot.IsEmpty);
     }
 
-    public List<Item> CheckInventoryForItemById(int id) {
+    public List<Item> CheckInventoryForStackableItemById(int id) {
         List<Item> stacks = new List<Item>();
 
-        foreach(Slot slot in inventorySlots) {
-            if (slot.Item.Id == id && !slot.Item.StackIsFull()) {
-                stacks.Add(slot.Item);
+        for (int i = 0; i < inventorySlots.Length; i++) {
+            if (inventorySlots[i].Item.Id == id && inventorySlots[i].Item.Stackable()) {
+                stacks.Add(inventorySlots[i].Item);
             }
         }
         stacks.Sort((i1, i2) => i2.CurrentStackSize.CompareTo(i1.CurrentStackSize));
         return stacks;
+    }
+
+    public Item CheckInventoryForItemById(int id) {
+        for (int i = 0; i < inventorySlots.Length; i++) {
+            if (inventorySlots[i].Item.Id == id) {
+                return inventorySlots[i].Item;
+            }
+        }
+        return null;
     }
 
     public bool AddItem(Item item) {
