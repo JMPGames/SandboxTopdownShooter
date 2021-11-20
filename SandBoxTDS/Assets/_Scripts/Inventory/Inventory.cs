@@ -21,7 +21,7 @@ public class Inventory : MonoBehaviour {
     }
 
     public bool InventoryIsFull() {
-        return inventorySlots.Any(slot => slot.IsEmpty);
+        return !inventorySlots.Any(slot => slot.IsEmpty);
     }
 
     public List<Item> CheckInventoryForStackableItemById(int id) {

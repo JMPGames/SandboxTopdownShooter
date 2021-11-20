@@ -73,7 +73,8 @@ public class EnemyController : Entity, IMobile {
             return Vector3.zero;
         }
 
-        if ((strafeTimer -= Time.deltaTime) <= 0.0f) {
+        strafeTimer -= Time.deltaTime;
+        if (strafeTimer <= 0.0f) {
             strafeDirection = Random.Range(1, 101) <= 50 ? Vector3.left : Vector3.right;
             strafeTimer = Random.Range(MinStrafeTime, MaxStrafeTime);
         }

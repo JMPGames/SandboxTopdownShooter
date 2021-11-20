@@ -31,6 +31,7 @@ public class Projectile : MonoBehaviour {
     void OnCollisionEnter(Collision other) {
         if (playerProjectile) {
             if (other.gameObject.CompareTag("Enemy")) {
+                other.gameObject.GetComponent<Entity>().LoseHealth(damage);
                 if (penetrates && penetrations > 0) {
                     penetrations--;
                     return;
@@ -38,7 +39,6 @@ public class Projectile : MonoBehaviour {
                 if (explosive) {
                     //explosion by explosionRange
                 }
-                other.gameObject.GetComponent<Entity>().LoseHealth(damage);
             }
         }
         else {

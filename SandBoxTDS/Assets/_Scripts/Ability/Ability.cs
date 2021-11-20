@@ -8,6 +8,10 @@ public class Ability : GameObj, IUsable {
         if (!Usable()) {
             UpdateCooldown();
         }
+
+        if (cooldownTimer < 0.0f) {
+            cooldownTimer = 0.0f;
+        }
     }
 
     public virtual void Use(Entity target = null) {
@@ -27,16 +31,10 @@ public class Ability : GameObj, IUsable {
     }
 
     public virtual void DecreaseCooldown(bool total = true, float amount = 0) {
-        cooldownTimer -= amount;
-        if (total || cooldownTimer < 0.0f) {
-            cooldownTimer = 0.0f;
-        }
+        cooldownTimer = total ? 0.0f : cooldownTimer - amount;
     }
 
     public virtual void UpdateCooldown() {
         cooldownTimer -= Time.deltaTime;
-        if (cooldownTimer < 0.0f) {
-            cooldownTimer = 0.0f;
-        }
     }
 }

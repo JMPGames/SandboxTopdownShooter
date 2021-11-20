@@ -29,7 +29,7 @@ public class Item : GameObj {
         List<Item> stacksInInventory = Inventory.instance.CheckInventoryForStackableItemById(Id);
         for (int i = 0; i < numberToBuy; i++) {
             if (CanAfford()) {
-                if (stacksInInventory.Count > 0 && !stacksInInventory[0].Stackable()) {
+                if (stacksInInventory.Count > 0 && stacksInInventory[0].Stackable()) {
                     stacksInInventory[0].CurrentStackSize += 1;
                     if (stacksInInventory[0].CurrentStackSize >= stacksInInventory[0].MaxStackSize) {
                         stacksInInventory.RemoveAt(0);
